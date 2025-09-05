@@ -6,7 +6,7 @@ import User from "../models/User.js";
 // Register (college-side)
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body; // ✅ allow role
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
     }
@@ -19,11 +19,26 @@ export const register = async (req, res) => {
     const newUser = new User({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: role || "student" // ✅ default to student if not provided
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    // ✅ issue token on registration too
+    const token = jwt.sign(
+      { id: newUser._id, email: newUser.email, uuid: newUser.uuid, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      uuid: newUser.uuid,
+      email: newUser.email,
+      role: newUser.role
+    });
   } catch (err) {
     console.error("Register error:", err);
     res.status(500).json({ message: "Server error" });
@@ -47,8 +62,9 @@ export const login = async (req, res) => {
       await user.save();
     }
 
+    // ✅ include role in JWT
     const token = jwt.sign(
-      { id: user._id, email: user.email, uuid: user.uuid },
+      { id: user._id, email: user.email, uuid: user.uuid, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -57,7 +73,8 @@ export const login = async (req, res) => {
       message: "Login successful",
       token,
       uuid: user.uuid,
-      email: user.email
+      email: user.email,
+      role: user.role // ✅ return role in response
     });
   } catch (err) {
     console.error("Login error:", err);

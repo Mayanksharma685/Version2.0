@@ -32,10 +32,13 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,    // updated on attendance marking
     },
+    role: {
+      type: String,
+      enum: ["student", "teacher", "admin"],
+      default: "student"
+    }
   },
-  { timestamps: true } // adds createdAt & updatedAt automatically
+  { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-
-export default User;
+export default mongoose.model("User", userSchema);

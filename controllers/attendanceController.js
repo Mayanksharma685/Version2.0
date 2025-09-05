@@ -1,16 +1,24 @@
 import User from "../models/User.js";
+import Attendance from "../models/Attendance.js";  // ✅ correct import
 
 export const markAttendance = async (req, res) => {
   try {
     const { uuid } = req.user; // comes from JWT middleware
 
+    // Find the user by uuid
     const user = await User.findOne({ uuid });
     if (!user) {
       return res.status(400).json({ status: "error", message: "User not found" });
     }
 
-    user.last_seen = new Date();
-    await user.save();
+    // Create attendance record
+    const record = new Attendance({
+      student: user._id,
+      markedBy: "student",
+      status: "present",
+    });
+
+    await record.save();
 
     res.json({
       status: "success",

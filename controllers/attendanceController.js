@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import Attendance from "../models/Attendance.js";  // ✅ correct import
+import Attendance from "../models/Attendance.js";  // correct import
 
 export const markAttendance = async (req, res) => {
   try {
@@ -30,3 +30,4 @@ export const markAttendance = async (req, res) => {
     res.status(500).json({ status: "error", message: "Server error" });
   }
 };
+

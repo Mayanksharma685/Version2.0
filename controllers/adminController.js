@@ -76,7 +76,7 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-// ========== ATTENDANCE ==========
+// ATTENDANCE
 export const markAttendanceAdmin = async (req, res) => {
   try {
     const { studentIds, status } = req.body;
@@ -187,3 +187,4 @@ export const impersonateUser = async (req, res) => {
     res.status(500).json({ status: "error", message: "Server error" });
   }
 };
+
